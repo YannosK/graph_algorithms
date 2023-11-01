@@ -14,8 +14,8 @@ struct node
 	node_pointer down;
 	node_pointer up;
 
-	int color;
-	int distance;
+	unsigned int color; // 0:white , 1:grey , 2:black
+	unsigned int distance;
 	node_pointer parent;
 };
 
@@ -125,7 +125,7 @@ int insert(node_pointer r_h[], node_pointer c_h[], int r, int c) // warning: you
 	new_node->down = NULL;
 	new_node->up = NULL;
 	new_node->color = 0;
-	new_node->distance = 255;
+	new_node->distance = UINT_MAX;
 	new_node->parent = NULL;
 
 	// INSERT IN ROW
@@ -218,7 +218,7 @@ int insert(node_pointer r_h[], node_pointer c_h[], int r, int c) // warning: you
 		else if (new_node->row == c_h[j]->row)
 		{
 			printf("\tInsertion not allowed. Node already exists\n\n");
-			exit(1); // it has to terminate because something was inserted
+			exit(1);
 		}
 		else
 			exit(1);
