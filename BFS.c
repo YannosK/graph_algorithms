@@ -24,6 +24,7 @@ int delete(node_pointer r_h[], node_pointer c_h[], int r, int c);
 void node(node_pointer r_h[]);
 void print_row(node_pointer r_h[]);
 void print_column(node_pointer c_h[]);
+void bfs(node_pointer r_h[], int r);
 
 int main(void)
 {
@@ -43,7 +44,9 @@ int main(void)
 	while (user_input != 'q')
 	{
 		printf("\nPrevious choice %c\n", user_input);
-		printf("q : quit, i : insert new node, d: deletes node using its data, r : prints all data of a row, c: prints all data of a column, n: shows the connections of the node\n");
+		printf("Select what would you like to do:\n");
+		printf("\tq : quit\n\ti : insert new node\n\td : deletes node using its data\n\tr : prints all data of a row\n\tc : prints all data of a column\n\tn : shows the connections of the node\n\tb : runs Breadth-First-Search algorithm on the graph\n");
+		printf("Your choice: ");
 
 		if (user_input != 'q')
 		{
@@ -101,6 +104,16 @@ int main(void)
 				printf("\n\n\tNODE CONNECTIONS\n\n");
 				node(row_head);
 				break;
+			case 'b':
+				printf("\n\n\tBREADTH-FIRST SEARCH\n\n");
+				printf("\tInsert starting-point node: ");
+				scanf("%d", &row_data);
+				getchar();
+				if (row_head[row_data - 1] == NULL)
+					printf("\tNo such node was found\n\n");
+				else
+					bfs(row_head, row_data);
+				break;
 			default:
 				break;
 			}
@@ -125,7 +138,7 @@ int insert(node_pointer r_h[], node_pointer c_h[], int r, int c) // warning: you
 	new_node->down = NULL;
 	new_node->up = NULL;
 	new_node->color = 0;
-	new_node->distance = UINT_MAX;
+	new_node->distance = 4294967295;
 	new_node->parent = NULL;
 
 	// INSERT IN ROW
@@ -543,4 +556,8 @@ void print_column(node_pointer c_h[])
 		}
 	}
 	printf("\n");
+}
+
+void bfs(node_pointer r_h[], int r)
+{
 }
