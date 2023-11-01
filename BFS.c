@@ -47,7 +47,7 @@ int main(void)
 	{
 		printf("\nPrevious choice %c\n", user_input);
 		printf("Select what would you like to do:\n");
-		printf("\tq : quit\n\ti : insert new node\n\td : deletes node using its data\n\tr : prints all data of a row\n\tc : prints all data of a column\n\tn : shows the connections of the node\n\tb : runs Breadth-First-Search algorithm on the graph\n");
+		printf("q : quit\ni : insert new node\nd : deletes node using its data\nr : prints all data of a row\nc : prints all data of a column\nn : shows the connections of the node\nb : runs Breadth-First-Search algorithm on the graph\n");
 		printf("Your choice: ");
 
 		if (user_input != 'q')
@@ -562,8 +562,6 @@ void print_column(node_pointer c_h[])
 
 void bfs(node_pointer r_h[], int r)
 {
-	// printf("\nwhite = %d\ngrey = %d\nblack = %d\n\n", white, grey, black);
-
 	int j;
 	int i = r - 1;
 	int neighbor;
@@ -581,37 +579,45 @@ void bfs(node_pointer r_h[], int r)
 			white++;
 		}
 	}
-	// printf("\nwhite = %d\ngrey = %d\nblack = %d\n\n", white, grey, black);
+	printf("\n0.\nwhite = %d\ngrey = %d\nblack = %d\n\n", white, grey, black);
 
 	r_h[i]->color = 1;
 	white--;
 	grey++;
 	r_h[i]->distance = 0;
 	r_h[i]->parent = NULL;
-	// printf("\nwhite = %d\ngrey = %d\nblack = %d\n\n", white, grey, black);
+	printf("\n1\nwhite = %d\ngrey = %d\nblack = %d\n\n", white, grey, black);
 
-	while (white != 0)
+	while (white != 0 || grey != 0)
 	{
 		for (j = 0; j < 30; j++)
 		{
-			if (r_h[j] != NULL && r_h[j]->color == 0)
+			if (r_h[j] != NULL && r_h[j]->color == 1)
 			{
 				aux = r_h[j];
+				printf("\tGrey one is %d.%d\n", aux->row, aux->column);
 
 				while (aux != NULL)
 				{
-					neighbor = aux->column;
+					neighbor = aux->column - 1;
+					printf("\t\tNeighbor is node %d ", neighbor + 1);
 
 					if (r_h[neighbor] == NULL)
+					{
+						printf("and it is not connected!\n");
 						exit(3);
+					}
 					else if (r_h[neighbor]->color == 0)
 					{
 						r_h[neighbor]->color = 1;
 						white--;
 						grey++;
-						r_h[neighbor]->distance += 1;
-						r_h[neighbor]->parent = aux;
+						r_h[neighbor]->distance = r_h[j]->distance + 1;
+						r_h[neighbor]->parent = r_h[j];
+						printf(" and it has color %d and distance %d\n\t\tIts parent is %d\n", r_h[neighbor]->color, r_h[neighbor]->distance, r_h[neighbor]->parent->row);
 					}
+
+					printf("\n\t\t2.\n\t\twhite = %d\n\t\tgrey = %d\n\t\tblack = %d\n\n", white, grey, black);
 
 					aux = aux->next;
 				}
@@ -619,8 +625,10 @@ void bfs(node_pointer r_h[], int r)
 				r_h[j]->color = 2;
 				grey--;
 				black++;
+
+				printf("\n\t3.\n\twhite = %d\n\tgrey = %d\n\tblack = %d\n\n", white, grey, black);
 			}
 		}
 	}
-	printf("\nwhite = %d\ngrey = %d\nblack = %d\n\n", white, grey, black);
+	printf("\n4.\nwhite = %d\ngrey = %d\nblack = %d\n\n", white, grey, black);
 }
