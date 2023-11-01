@@ -564,11 +564,14 @@ void bfs(node_pointer r_h[], int r)
 {
 	// printf("\nwhite = %d\ngrey = %d\nblack = %d\n\n", white, grey, black);
 
+	int j;
 	int i = r - 1;
+	int neighbor;
+	node_pointer u, aux;
 
 	printf("\tParent of all nodes will be node %d\n", r_h[i]->row);
 
-	for (int j = 0; j < 30; j++)
+	for (j = 0; j < 30; j++)
 	{
 		if (r_h[j] != NULL)
 		{
@@ -586,4 +589,38 @@ void bfs(node_pointer r_h[], int r)
 	r_h[i]->distance = 0;
 	r_h[i]->parent = NULL;
 	// printf("\nwhite = %d\ngrey = %d\nblack = %d\n\n", white, grey, black);
+
+	while (white != 0)
+	{
+		for (j = 0; j < 30; j++)
+		{
+			if (r_h[j] != NULL && r_h[j]->color == 0)
+			{
+				aux = r_h[j];
+
+				while (aux != NULL)
+				{
+					neighbor = aux->column;
+
+					if (r_h[neighbor] == NULL)
+						exit(3);
+					else if (r_h[neighbor]->color == 0)
+					{
+						r_h[neighbor]->color = 1;
+						white--;
+						grey++;
+						r_h[neighbor]->distance += 1;
+						r_h[neighbor]->parent = aux;
+					}
+
+					aux = aux->next;
+				}
+
+				r_h[j]->color = 2;
+				grey--;
+				black++;
+			}
+		}
+	}
+	printf("\nwhite = %d\ngrey = %d\nblack = %d\n\n", white, grey, black);
 }
