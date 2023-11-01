@@ -13,6 +13,10 @@ struct node
 	node_pointer back;
 	node_pointer down;
 	node_pointer up;
+
+	int color;
+	int distance;
+	node_pointer parent;
 };
 
 int insert(node_pointer r_h[], node_pointer c_h[], int r, int c);
@@ -120,6 +124,9 @@ int insert(node_pointer r_h[], node_pointer c_h[], int r, int c) // warning: you
 	new_node->back = NULL;
 	new_node->down = NULL;
 	new_node->up = NULL;
+	new_node->color = 0;
+	new_node->distance = 255;
+	new_node->parent = NULL;
 
 	// INSERT IN ROW
 	if (r_h[i] != NULL)
