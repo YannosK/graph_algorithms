@@ -19,6 +19,8 @@ struct node
 	node_pointer parent;
 };
 
+int white = 0, grey = 0, black = 0;
+
 int insert(node_pointer r_h[], node_pointer c_h[], int r, int c);
 int delete(node_pointer r_h[], node_pointer c_h[], int r, int c);
 void node(node_pointer r_h[]);
@@ -560,4 +562,28 @@ void print_column(node_pointer c_h[])
 
 void bfs(node_pointer r_h[], int r)
 {
+	// printf("\nwhite = %d\ngrey = %d\nblack = %d\n\n", white, grey, black);
+
+	int i = r - 1;
+
+	printf("\tParent of all nodes will be node %d\n", r_h[i]->row);
+
+	for (int j = 0; j < 30; j++)
+	{
+		if (r_h[j] != NULL)
+		{
+			r_h[j]->color = 0;
+			r_h[j]->distance = 4294967295;
+			r_h[j]->parent = NULL;
+			white++;
+		}
+	}
+	// printf("\nwhite = %d\ngrey = %d\nblack = %d\n\n", white, grey, black);
+
+	r_h[i]->color = 1;
+	white--;
+	grey++;
+	r_h[i]->distance = 0;
+	r_h[i]->parent = NULL;
+	// printf("\nwhite = %d\ngrey = %d\nblack = %d\n\n", white, grey, black);
 }
