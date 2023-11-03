@@ -563,17 +563,28 @@ void print_column(node_pointer c_h[])
 
 void bfs(node_pointer r_h[], int r)
 {
-	int j;
 	int i = r - 1;
 	int neighbor;
-	node_pointer u, aux;
+	node_pointer u, aux, parent;
+
+	typedef struct vertex *vp;
+	struct vertex
+	{
+		int v;
+		vp n;
+		vp b;
+	};
+
+	vp head = NULL;
+	vp tail = NULL;
+	vp temp, new_vertex;
 
 	printf("\n\tParent of all nodes will be node %d\n", r_h[i]->row);
 	white = 0;
 	grey = 0;
 	black = 0;
 
-	for (j = 0; j < 30; j++)
+	for (int j = 0; j < 30; j++)
 	{
 		if (r_h[j] != NULL)
 		{
@@ -583,7 +594,6 @@ void bfs(node_pointer r_h[], int r)
 			white++;
 		}
 	}
-	// printf("\nInitial states:\nwhite = %d\ngrey = %d\nblack = %d\n\n", white, grey, black);
 
 	r_h[i]->color = 1;
 	white--;
@@ -592,52 +602,87 @@ void bfs(node_pointer r_h[], int r)
 	r_h[i]->parent = NULL;
 	printf("\nInitial states:\nwhite = %d\ngrey = %d\nblack = %d\n\n", white, grey, black);
 
-	while (white != 0 || grey != 0)
+	// ENQUEUE SOURCE NODE
+	head = (vp)malloc(sizeof(struct vertex));
+	head->v = r_h[i]->row;
+	head->n = NULL;
+	head->b = NULL;
+	tail = head;
+	printf("Head is %d\n", head->v);
+
+	while (head != NULL)
 	{
-		for (j = 0; j < 30; j++)
+		parent = r_h[tail->v - 1];
+		aux = parent;
+		printf("\tGrey one is %d.%d\n", parent->row, parent->column);
+
+		// DEQUEUE THE TAIL
+		temp = tail;
+		if (temp->b == NULL)
 		{
-			if (r_h[j] != NULL && r_h[j]->color == 1)
-			{
-				aux = r_h[j];
-				printf("\tGrey one is %d.%d\n", aux->row, aux->column);
-
-				while (aux != NULL)
-				{
-					neighbor = aux->column - 1;
-					printf("\t\tNeighbor is node %d", neighbor + 1);
-
-					if (r_h[neighbor] == NULL)
-					{
-						printf("and it is not connected!\n");
-						exit(3);
-					}
-					else if (r_h[neighbor]->color == 2)
-						printf(" and it is black\n");
-					else if (r_h[neighbor]->color == 1)
-						printf(" and it is already grey (in the queue)\n");
-					else if (r_h[neighbor]->color == 0)
-					{
-						r_h[neighbor]->color = 1;
-						white--;
-						grey++;
-						r_h[neighbor]->distance = r_h[j]->distance + 1;
-						r_h[neighbor]->parent = r_h[j];
-						printf(" and it just turned grey (color %d)\n\t\tDistance: %d\n\t\tParent: %d\n", r_h[neighbor]->color, r_h[neighbor]->distance, r_h[neighbor]->parent->row);
-					}
-
-					printf("\t\t\tColors after neighbor %d:\n\t\t\twhite = %d\n\t\t\tgrey = %d\n\t\t\tblack = %d\n", neighbor + 1, white, grey, black);
-
-					aux = aux->next;
-				}
-
-				r_h[j]->color = 2;
-				grey--;
-				black++;
-
-				printf("\n\tColors after checking all the neighbors of %d.%d\n\twhite = %d\n\tgrey = %d\n\tblack = %d\n\n", r_h[j]->row, r_h[j]->column, white, grey, black);
-				break; // this one either saves it or beaks it
-			}
+			head = NULL;
+			tail = NULL;
+			free(temp);
+			printf("\tFreed the head\n");
 		}
+		else
+		{
+			tail = tail->b;
+			tail->n = NULL;
+			free(temp);
+			printf("\tFreed the tail\n");
+		}
+
+		while (aux != NULL)
+		{
+			neighbor = aux->column - 1;
+			printf("\t\tNeighbor is node %d", neighbor + 1);
+
+			if (r_h[neighbor] == NULL)
+			{
+				printf("and it is not connected!\n");
+				exit(3);
+			}
+			else if (r_h[neighbor]->color == 2)
+				printf(" and it is black\n");
+			else if (r_h[neighbor]->color == 1)
+				printf(" and it is already grey (in the queue)\n");
+			else if (r_h[neighbor]->color == 0)
+			{
+				r_h[neighbor]->color = 1;
+				white--;
+				grey++;
+				r_h[neighbor]->distance = parent->distance + 1;
+				r_h[neighbor]->parent = parent;
+				printf(" and it just turned grey (color %d)\n\t\tDistance: %d\n\t\tParent: %d\n", r_h[neighbor]->color, r_h[neighbor]->distance, r_h[neighbor]->parent->row);
+
+				// ENQUEUE THE GREY
+				new_vertex = (vp)malloc(sizeof(struct vertex));
+				new_vertex->v = r_h[neighbor]->row;
+				if (head != NULL)
+				{
+					head->b = new_vertex;
+					new_vertex->n = head;
+					new_vertex->b = NULL;
+					head = new_vertex;
+				}
+				else
+				{
+					head = new_vertex;
+					head->n = NULL;
+					head->b = NULL;
+					tail = head;
+				}
+			}
+			printf("\t\t\tColors after neighbor %d:\n\t\t\twhite = %d\n\t\t\tgrey = %d\n\t\t\tblack = %d\n", neighbor + 1, white, grey, black);
+
+			aux = aux->next;
+		}
+		parent->color = 2;
+		grey--;
+		black++;
+
+		printf("\n\tColors after checking all the neighbors of %d.%d\n\twhite = %d\n\tgrey = %d\n\tblack = %d\n\n", parent->row, parent->column, white, grey, black);
 	}
 	printf("\nColors after checking the entire array of nodes:\nwhite = %d\ngrey = %d\nblack = %d\n\n", white, grey, black);
 }
