@@ -623,14 +623,12 @@ void bfs(node_pointer r_h[], int r)
 			head = NULL;
 			tail = NULL;
 			free(temp);
-			printf("\tFreed the head\n");
 		}
 		else
 		{
 			tail = tail->b;
 			tail->n = NULL;
 			free(temp);
-			printf("\tFreed the tail\n");
 		}
 
 		while (aux != NULL)
