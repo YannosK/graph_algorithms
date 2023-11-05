@@ -45,7 +45,7 @@ int main(void)
 
 	while (user_input != 'q')
 	{
-		printf("\n\n***********************************************************************************************************************************\n");
+		printf("\n\n*******************************************************************************\n");
 		printf("Previous choice %c\n", user_input);
 		printf("Select what would you like to do:\n");
 		printf("q : quit\ni : insert new node\nd : deletes node using its data\nr : prints all data of a row\nc : prints all data of a column\nn : shows the connections of the node\nb : runs Breadth-First-Search algorithm on the graph\n");
@@ -683,4 +683,35 @@ void bfs(node_pointer r_h[], int r)
 		printf("\n\tColors after checking all the neighbors of %d.%d\n\twhite = %d\n\tgrey = %d\n\tblack = %d\n\n", parent->row, parent->column, white, grey, black);
 	}
 	printf("\nColors after checking the entire array of nodes:\nwhite = %d\ngrey = %d\nblack = %d\n\n", white, grey, black);
+
+	printf("\n\tBFS RESULTS:\n\n");
+	int clr;
+	for (int j = 0; j < 30; j++)
+	{
+		if (r_h[j] != NULL)
+		{
+			printf("\tNode: %d\n\tDistance: %d\n", r_h[j]->row, r_h[j]->distance);
+			printf("\tParent: ");
+			if (r_h[j]->parent == NULL)
+				printf(" itself (starting node)\n");
+			else
+				printf("%d\n", r_h[j]->parent->row);
+			printf("\tColor: ");
+			clr = r_h[j]->color;
+			switch (clr)
+			{
+			case 0:
+				printf("white\n\n");
+				break;
+			case 1:
+				printf("grey\n\n");
+				break;
+			case 2:
+				printf("black\n\n");
+				break;
+			default:
+				break;
+			}
+		}
+	}
 }
