@@ -593,6 +593,7 @@ void bfs(node_pointer r_h[], int r)
             r_h[j]->color = 0;
             r_h[j]->distance = 4294967295;
             r_h[j]->parent = NULL;
+            r_h[j]->leaf = 2;
             white++;
         }
     }
@@ -740,4 +741,11 @@ void bfs(node_pointer r_h[], int r)
             }
         }
     }
+
+    char answer;
+    printf("\tDo you want to run cycle finder algorithm?\n\tIf you don't the breadth-first search results will be lost after this routine is over\n\t(press 'y' for yes, or 'n' for no): ");
+    if (answer == 'y')
+        printf("\n\n\tCYCLE FINDER\n\n");
+    else
+        return;
 }
