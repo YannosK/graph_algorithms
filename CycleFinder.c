@@ -1,5 +1,5 @@
 /*
-BREADTH FIRST SEARCH
+FINDING CYCLES IN A GRAPH
 */
 #include <stdio.h>
 #include <stdlib.h>
