@@ -744,6 +744,8 @@ void bfs(node_pointer r_h[], int r)
 
     char answer;
     printf("\tDo you want to run cycle finder algorithm?\n\tIf you don't the breadth-first search results will be lost after this routine is over\n\t(press 'y' for yes, or 'n' for no): ");
+    scanf("%c", &answer);
+    getchar();
     if (answer == 'y')
         printf("\n\n\tCYCLE FINDER\n\n");
     else
