@@ -17,6 +17,7 @@ struct node
     unsigned int color; // 0:white , 1:grey , 2:black
     unsigned int distance;
     node_pointer parent;
+    unsigned int leaf; // 0 if not leaf, 1 if leaf, 2 if an error happened
 };
 
 int white = 0, grey = 0, black = 0;
@@ -565,6 +566,7 @@ void bfs(node_pointer r_h[], int r)
 {
     int i = r - 1;
     int neighbor;
+    unsigned int l_flag;
     node_pointer u, aux, parent;
 
     typedef struct vertex *vp;
@@ -600,6 +602,7 @@ void bfs(node_pointer r_h[], int r)
     grey++;
     r_h[i]->distance = 0;
     r_h[i]->parent = NULL;
+    r_h[i]->leaf = 0;
     printf("\nInitial states:\nwhite = %d\ngrey = %d\nblack = %d\n\n", white, grey, black);
 
     // ENQUEUE SOURCE NODE
@@ -631,6 +634,7 @@ void bfs(node_pointer r_h[], int r)
             free(temp);
         }
 
+        l_flag = 1;
         while (aux != NULL)
         {
             neighbor = aux->column - 1;
@@ -647,6 +651,7 @@ void bfs(node_pointer r_h[], int r)
                 printf(" and it is already grey (in the queue)\n");
             else if (r_h[neighbor]->color == 0)
             {
+                l_flag = 0;
                 r_h[neighbor]->color = 1;
                 white--;
                 grey++;
@@ -676,6 +681,12 @@ void bfs(node_pointer r_h[], int r)
 
             aux = aux->next;
         }
+        if (l_flag == 0)
+            parent->leaf = 0; // not a leaf
+        else if (l_flag == 1)
+            parent->leaf = 1; // a leaf
+        else
+            parent->leaf = 2; // undefined - error
         parent->color = 2;
         grey--;
         black++;
@@ -685,7 +696,7 @@ void bfs(node_pointer r_h[], int r)
     printf("\nColors after checking the entire array of nodes:\nwhite = %d\ngrey = %d\nblack = %d\n\n", white, grey, black);
 
     printf("\n\tBFS RESULTS:\n\n");
-    int clr;
+    unsigned int clr;
     for (int j = 0; j < 30; j++)
     {
         if (r_h[j] != NULL)
@@ -701,13 +712,28 @@ void bfs(node_pointer r_h[], int r)
             switch (clr)
             {
             case 0:
-                printf("white\n\n");
+                printf("white\n");
                 break;
             case 1:
-                printf("grey\n\n");
+                printf("grey\n");
                 break;
             case 2:
-                printf("black\n\n");
+                printf("black\n");
+                break;
+            default:
+                break;
+            }
+            printf("\tIs ");
+            switch (r_h[j]->leaf)
+            {
+            case 0:
+                printf("not a leaf\n\n");
+                break;
+            case 1:
+                printf("a leaf\n\n");
+                break;
+            case 2:
+                printf("it a leaf? (ERROR)\n\n");
                 break;
             default:
                 break;
