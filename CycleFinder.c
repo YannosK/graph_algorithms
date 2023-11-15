@@ -760,7 +760,7 @@ void cyclefinder(node_pointer r_h[])
     char a;
 
     printf("\n\n\tCYCLE FINDER\n\n");
-    printf("\tAdd the two leaf nodes that you want to find a cycle they belong in\n");
+    printf("\tAdd the two nodes that you want to find a cycle they belong in\n\tNote that they should be connected, and their edge should not belong in the bfs spanning tree\n");
     printf("\tRow: ");
     scanf("%d", &row_data);
     getchar();
@@ -777,7 +777,7 @@ void cyclefinder(node_pointer r_h[])
         aux = aux->next;
     }
 
-    if (r_h[r] == NULL || r_h[c] == NULL)
+    if (r_h[r] == NULL)
     {
         printf("\tNo such node was found (invalid row)\n");
         printf("\tWanna try again? (press 'y' for yes, or 'n' for no): ");
@@ -788,7 +788,7 @@ void cyclefinder(node_pointer r_h[])
         else
             return;
     }
-    else if (aux->column != column_data)
+    else if (aux->column != column_data || r_h[c] == NULL)
     {
         printf("\tNo such node was found (invalid column - either the node does not exist, or it is not connected to the 'row' node)\n");
         printf("\tWanna try again? (press 'y' for yes, or 'n' for no): ");
@@ -918,7 +918,7 @@ void cyclefinder(node_pointer r_h[])
         }
 
         if (aux_r == NULL || aux_c == NULL)
-            printf("\tThe nodes you inserted are not valid to run (likely they are a single branch)\n");
+            printf("\tThe nodes you inserted are not valid to run (they are either a single branch or their edge belongs to the bfs spanning tree)\n");
         else
         {
             printf("\n\tPRINTING THE CYCLE\n\n");
