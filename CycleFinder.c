@@ -773,9 +773,7 @@ void cyclefinder(node_pointer r_h[])
     aux = r_h[r];
 
     while (aux != NULL && aux->next != NULL && aux->column != column_data)
-    {
         aux = aux->next;
-    }
 
     if (r_h[r] == NULL || r_h[c] == NULL)
     {
@@ -799,9 +797,9 @@ void cyclefinder(node_pointer r_h[])
         else
             return;
     }
-    else if (!(r_h[r]->leaf == 1 || r_h[c]->leaf == 1))
+    else if (r_h[r]->leaf != 1 || r_h[c]->leaf != 1)
     {
-        printf("\tInvalid nodes (at least one iof the two nodes must be a leaf)\n");
+        printf("\tInvalid nodes (both nodes must be leafs of the bfs spanning tree)\n");
         printf("\tWanna try again? (press 'y' for yes, or 'n' for no): ");
         scanf("%c", &a);
         getchar();
@@ -876,92 +874,60 @@ void cyclefinder(node_pointer r_h[])
 
         while (aux_r->member == aux_c->member)
         {
-            if (aux_r->back == NULL)
+            aux_r = aux_r->back;
+            aux_c = aux_c->back;
+
+            tmp = aux_r->next;
+            aux_r->next = NULL;
+            tail_r = aux_r;
+            free(tmp);
+
+            tmp = aux_c->next;
+            aux_c->next = NULL;
+            tail_c = aux_c;
+            free(tmp);
+        }
+
+        printf("\n\tPRINTING THE CYCLE\n\n");
+        aux_r = head_r;
+        aux_c = tail_c;
+
+        while (aux_r != NULL)
+        {
+            printf("\t%d\n", aux_r->member->row);
+            tmp = aux_r;
+            if (aux_r->next == NULL)
             {
-                tmp = aux_r;
+                printf("\t%d\n", aux_r->member->parent->row);
                 aux_r = NULL;
-                free(tmp);
-                aux_c = aux_c->back;
-                tmp = aux_c->next;
-                aux_c->next = NULL;
-                tail_c = aux_c;
-                free(tmp);
-                break;
-            }
-            else if (aux_c->back == NULL)
-            {
-                tmp = aux_c;
-                aux_c = NULL;
-                free(tmp);
-                aux_r = aux_r->back;
-                tmp = aux_r->next;
-                aux_r->next = NULL;
-                tail_r = aux_r;
                 free(tmp);
                 break;
             }
             else
             {
-                aux_r = aux_r->back;
-                aux_c = aux_c->back;
-
-                tmp = aux_r->next;
-                aux_r->next = NULL;
-                tail_r = aux_r;
-                free(tmp);
-
-                tmp = aux_c->next;
-                aux_c->next = NULL;
-                tail_c = aux_c;
+                aux_r = aux_r->next;
+                aux_r->back = NULL;
+                head_r = aux_r;
                 free(tmp);
             }
         }
 
-        if (aux_r == NULL || aux_c == NULL)
-            printf("\tThe nodes you inserted are not valid to run (likely they are a single branch)\n");
-        else
+        while (aux_c != NULL)
         {
-            printf("\n\tPRINTING THE CYCLE\n\n");
-            aux_r = head_r;
-            aux_c = tail_c;
-
-            while (aux_r != NULL)
+            printf("\t%d\n", aux_c->member->row);
+            tmp = aux_c;
+            if (aux_c->back == NULL)
             {
-                printf("\t%d\n", aux_r->member->row);
-                tmp = aux_r;
-                if (aux_r->next == NULL)
-                {
-                    printf("\t%d\n", aux_r->member->parent->row);
-                    aux_r = NULL;
-                    free(tmp);
-                    break;
-                }
-                else
-                {
-                    aux_r = aux_r->next;
-                    aux_r->back = NULL;
-                    head_r = aux_r;
-                    free(tmp);
-                }
+                aux_c = NULL;
+                free(tmp);
+                break;
             }
-
-            while (aux_c != NULL)
+            else
             {
-                printf("\t%d\n", aux_c->member->row);
-                tmp = aux_c;
-                if (aux_c->back == NULL)
-                {
-                    aux_c = NULL;
-                    free(tmp);
-                    break;
-                }
-                else
-                {
-                    aux_c = aux_c->back;
-                    aux_c->next = NULL;
-                    tail_c = aux_c;
-                    free(tmp);
-                }
+                aux_c = aux_c->back;
+                aux_c->next = NULL;
+                tail_c = aux_c;
+                free(tmp);
             }
         }
 
