@@ -809,7 +809,6 @@ void cyclefinder(node_pointer r_h[])
             cyclefinder(r_h);
         else
             return;
-        return;
     }
     else
     {
@@ -837,6 +836,11 @@ void cyclefinder(node_pointer r_h[])
         {
             tmp = (plist)malloc(sizeof(struct Parentlist));
             tmp->member = aux_r->member->parent;
+            if (tmp->member == NULL)
+            {
+                free(tmp);
+                break;
+            }
             tmp->back = aux_r;
             tmp->next = NULL;
             aux_r->next = tmp;
@@ -855,6 +859,11 @@ void cyclefinder(node_pointer r_h[])
         {
             tmp = (plist)malloc(sizeof(struct Parentlist));
             tmp->member = aux_c->member->parent;
+            if (tmp->member == NULL)
+            {
+                free(tmp);
+                break;
+            }
             tmp->next = NULL;
             tmp->back = aux_c;
             aux_c->next = tmp;
@@ -867,30 +876,101 @@ void cyclefinder(node_pointer r_h[])
 
         while (aux_r->member == aux_c->member)
         {
-            aux_r = aux_r->back;
-            aux_c = aux_c->back;
+            if (aux_r->back == NULL)
+            {
+                tmp = aux_r;
+                aux_r = NULL;
+                free(tmp);
+                aux_c = aux_c->back;
+                tmp = aux_c->next;
+                aux_c->next = NULL;
+                tail_c = aux_c;
+                free(tmp);
+                break;
+            }
+            else if (aux_c->back == NULL)
+            {
+                tmp = aux_c;
+                aux_c = NULL;
+                free(tmp);
+                aux_r = aux_r->back;
+                tmp = aux_r->next;
+                aux_r->next = NULL;
+                tail_r = aux_r;
+                free(tmp);
+                break;
+            }
+            else
+            {
+                aux_r = aux_r->back;
+                aux_c = aux_c->back;
 
-            tmp = aux_r->next;
-            aux_r->next = NULL;
-            tail_r = aux_r;
-            free(tmp);
+                tmp = aux_r->next;
+                aux_r->next = NULL;
+                tail_r = aux_r;
+                free(tmp);
 
-            tmp = aux_c->next;
-            aux_c->next = NULL;
-            tail_c = aux_c;
-            free(tmp);
+                tmp = aux_c->next;
+                aux_c->next = NULL;
+                tail_c = aux_c;
+                free(tmp);
+            }
         }
 
-        printf("\n\tPRINTING THE CYCLE\n");
-
-        aux_r = head_r;
-        aux_c = tail_c;
-
         if (aux_r == NULL || aux_c == NULL)
-            printf("\nThe nodes you inserted are a single lonely branch (not really a cycle)\n\n");
+            printf("\tThe nodes you inserted are not valid to run (likely they are a single branch)\n");
         else
-            printf("\nMove on\n\n");
+        {
+            printf("\n\tPRINTING THE CYCLE\n\n");
+            aux_r = head_r;
+            aux_c = tail_c;
 
-        return;
+            while (aux_r != NULL)
+            {
+                printf("\t%d\n", aux_r->member->row);
+                tmp = aux_r;
+                if (aux_r->next == NULL)
+                {
+                    printf("\t%d\n", aux_r->member->parent->row);
+                    aux_r = NULL;
+                    free(tmp);
+                    break;
+                }
+                else
+                {
+                    aux_r = aux_r->next;
+                    aux_r->back = NULL;
+                    head_r = aux_r;
+                    free(tmp);
+                }
+            }
+
+            while (aux_c != NULL)
+            {
+                printf("\t%d\n", aux_c->member->row);
+                tmp = aux_c;
+                if (aux_c->back == NULL)
+                {
+                    aux_c = NULL;
+                    free(tmp);
+                    break;
+                }
+                else
+                {
+                    aux_c = aux_c->back;
+                    aux_c->next = NULL;
+                    tail_c = aux_c;
+                    free(tmp);
+                }
+            }
+        }
+
+        printf("\n\tWanna run again? (press 'y' for yes, or 'n' for no): ");
+        scanf("%c", &a);
+        getchar();
+        if (a == 'y')
+            cyclefinder(r_h);
+        else
+            return;
     }
 }
