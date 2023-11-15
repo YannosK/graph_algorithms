@@ -777,7 +777,7 @@ void cyclefinder(node_pointer r_h[])
         aux = aux->next;
     }
 
-    if (aux == NULL)
+    if (r_h[r] == NULL || r_h[c] == NULL)
     {
         printf("\tNo such node was found (invalid row)\n");
         printf("\tWanna try again? (press 'y' for yes, or 'n' for no): ");
@@ -813,14 +813,76 @@ void cyclefinder(node_pointer r_h[])
     }
     else
     {
-        printf("\tRUN\n\n");
-        /*
-        WARNING
+        typedef struct Parentlist *plist;
+        struct Parentlist
+        {
+            node_pointer member;
+            plist next;
+            plist back;
+        };
 
-        as it is right now it doesn't catch a special case:
-        a lonely branch
-        this could be considered a cycle even if you run the algorithm you are about to write
-        */
+        plist tail_r, tail_c;
+        plist head_r, head_c;
+        plist aux_r, aux_c;
+        plist tmp;
+
+        // Creating a list for the 'row' node
+        head_r = (plist)malloc(sizeof(struct Parentlist));
+        head_r->member = r_h[r];
+        head_r->back = NULL;
+        head_r->next = NULL;
+        tail_r = head_r;
+        aux_r = head_r;
+        while (aux_r != NULL && aux_r->member != NULL)
+        {
+            tmp = (plist)malloc(sizeof(struct Parentlist));
+            tmp->member = aux_r->member->parent;
+            tmp->back = aux_r;
+            tmp->next = NULL;
+            aux_r->next = tmp;
+            tail_r = tmp;
+            aux_r = aux_r->next;
+        }
+
+        // Creating a list for the 'column' node
+        head_c = (plist)malloc(sizeof(struct Parentlist));
+        head_c->member = r_h[c];
+        head_c->back = NULL;
+        head_c->next = NULL;
+        tail_c = head_c;
+        aux_c = head_c;
+        while (aux_c != NULL && aux_c->member != NULL)
+        {
+            tmp = (plist)malloc(sizeof(struct Parentlist));
+            tmp->member = aux_c->member->parent;
+            tmp->next = NULL;
+            tmp->back = aux_c;
+            aux_c->next = tmp;
+            tail_c = tmp;
+            aux_c = aux_c->next;
+        }
+
+        aux_r = tail_r;
+        aux_c = tail_c;
+
+        while (aux_r->member == aux_c->member)
+        {
+            aux_r = aux_r->back;
+            aux_c = aux_c->back;
+
+            tmp = aux_r->next;
+            aux_r->next = NULL;
+            tail_r = aux_r;
+            free(tmp);
+
+            tmp = aux_c->next;
+            aux_c->next = NULL;
+            tail_c = aux_c;
+            free(tmp);
+        }
+        printf("\n");
+        printf("First nodes apart are: %d and %d\n", tail_r->member->row, tail_c->member->row);
+
         return;
     }
 }
