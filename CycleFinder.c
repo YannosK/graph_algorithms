@@ -880,8 +880,16 @@ void cyclefinder(node_pointer r_h[])
             tail_c = aux_c;
             free(tmp);
         }
-        printf("\n");
-        printf("First nodes apart are: %d and %d\n", tail_r->member->row, tail_c->member->row);
+
+        printf("\n\tPRINTING THE CYCLE\n");
+
+        aux_r = head_r;
+        aux_c = tail_c;
+
+        if (aux_r == NULL || aux_c == NULL)
+            printf("\nThe nodes you inserted are a single lonely branch (not really a cycle)\n\n");
+        else
+            printf("\nMove on\n\n");
 
         return;
     }
