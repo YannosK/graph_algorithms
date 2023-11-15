@@ -21,7 +21,7 @@ struct node
 int white = 0, grey = 0, black = 0;
 
 void insert(node_pointer r_h[], node_pointer c_h[], int r, int c);
-void delete(node_pointer r_h[], node_pointer c_h[], int r, int c);
+void del(node_pointer r_h[], node_pointer c_h[], int r, int c);
 void node(node_pointer r_h[]);
 void print_row(node_pointer r_h[]);
 void print_column(node_pointer c_h[]);
@@ -86,8 +86,8 @@ int main(void)
                     printf("\tNo such edge was found\n\n");
                 else
                 {
-                    delete (row_head, column_head, row_data, column_data);
-                    delete (row_head, column_head, column_data, row_data);
+                    del(row_head, column_head, row_data, column_data);
+                    del(row_head, column_head, column_data, row_data);
                 }
             }
             break;
@@ -136,7 +136,7 @@ void insert(node_pointer r_h[], node_pointer c_h[], int r, int c)
     new_node->down = NULL;
     new_node->up = NULL;
     new_node->color = 0;
-    new_node->distance = 4294967295;
+    new_node->distance = INT_MAX;
     new_node->parent = NULL;
     new_node->leaf = 2;
 
@@ -241,7 +241,7 @@ void insert(node_pointer r_h[], node_pointer c_h[], int r, int c)
         exit(1);
 }
 
-void delete(node_pointer r_h[], node_pointer c_h[], int r, int c)
+void del(node_pointer r_h[], node_pointer c_h[], int r, int c)
 {
     node_pointer node_to_delete, c_aux, c_aux2, r_aux, r_aux2;
 
@@ -578,7 +578,7 @@ void bfs(node_pointer r_h[], int r)
         if (r_h[j] != NULL)
         {
             r_h[j]->color = 0;
-            r_h[j]->distance = 4294967295;
+            r_h[j]->distance = INT_MAX;
             r_h[j]->parent = NULL;
             r_h[j]->leaf = 2;
             white++;
@@ -785,7 +785,7 @@ void cyclefinder(node_pointer r_h[])
     }
     else if (!(r_h[r]->leaf == 1 || r_h[c]->leaf == 1))
     {
-        printf("\tInvalid nodes (at least one iof the two nodes must be a leaf)\n");
+        printf("\tInvalid nodes (at least one of the two nodes must be a leaf)\n");
         printf("\tWanna try again? (press 'y' for yes, or 'n' for no): ");
         scanf("%c", &a);
         getchar();
