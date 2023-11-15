@@ -1,6 +1,4 @@
-/*
-FINDING CYCLES IN A GRAPH
-*/
+// FINDING CYCLES IN A GRAPH
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -14,16 +12,16 @@ struct node
     node_pointer down;
     node_pointer up;
 
-    unsigned int color; // 0:white , 1:grey , 2:black
+    unsigned short color; // 0:white , 1:grey , 2:black
     unsigned int distance;
     node_pointer parent;
-    unsigned int leaf; // 0 if not leaf, 1 if leaf, 2 if an error happened
+    unsigned short leaf; // 0 if not leaf, 1 if leaf, 2 if an error happened
 };
 
 int white = 0, grey = 0, black = 0;
 
-int insert(node_pointer r_h[], node_pointer c_h[], int r, int c);
-int delete(node_pointer r_h[], node_pointer c_h[], int r, int c);
+void insert(node_pointer r_h[], node_pointer c_h[], int r, int c);
+void delete(node_pointer r_h[], node_pointer c_h[], int r, int c);
 void node(node_pointer r_h[]);
 void print_row(node_pointer r_h[]);
 void print_column(node_pointer c_h[]);
@@ -47,87 +45,82 @@ int main(void)
 
     while (user_input != 'q')
     {
+        fflush(stdin);
         printf("\n\n*******************************************************************************\n");
         printf("Previous choice %c\n", user_input);
         printf("Select what would you like to do:\n");
-        printf("q : quit\ni : insert new node\nd : deletes node using its data\nr : prints all data of a row\nc : prints all data of a column\nn : shows the connections of the node\nb : runs Breadth-First-Search algorithm on the graph\n");
+        printf("q : quit\ni : insert new edge using node data\nd : delete edge using node data\nr : prints all data of a row in the sparse array of edges\nc : prints all data of a column in the sparse array of edges\nn : shows the connections of an edge in the sparse array\nb : runs Breadth-First-Search algorithm on the graph\n");
         printf("Your choice: ");
+        scanf("%c", &user_input);
+        getchar();
 
-        if (user_input != 'q')
+        switch (user_input)
         {
-            // a way to clear the input buffer (that does not work on all compilers)
-            fflush(stdin);
-            user_input = getchar();
+        case 'q':
+            printf("\n\n\tQUIT\n\n");
+            break;
+        case 'i':
+            printf("\n\n\tINSERT\n\n");
+            printf("\tInsert edge data\n\tInsert the two nodes as 'row' and 'column'\n\tRow: ");
+            scanf("%d", &row_data);
             getchar();
-
-            switch (user_input)
+            printf("\tColumn: ");
+            scanf("%d", &column_data);
+            getchar();
+            insert(row_head, column_head, row_data, column_data);
+            insert(row_head, column_head, column_data, row_data);
+            break;
+        case 'd':
+            printf("\n\n\tDELETE\n\n");
+            printf("\tInsert the data of the edge you wish to delete\n\tRow: ");
+            scanf("%d", &row_data);
+            getchar();
+            if (row_head[row_data - 1] == NULL)
+                printf("\tNo such edge was found\n\n");
+            else
             {
-            case 'q':
-                printf("\n\n\tQUIT\n\n");
-                break;
-            case 'i':
-                printf("\n\n\tINSERT\n\n");
-                printf("\tInsert node data\n\tRow: ");
-                scanf("%d", &row_data);
-                getchar();
                 printf("\tColumn: ");
                 scanf("%d", &column_data);
                 getchar();
-                insert(row_head, column_head, row_data, column_data);
-                insert(row_head, column_head, column_data, row_data);
-                break;
-            case 'd':
-                printf("\n\n\tDELETE\n\n");
-                printf("\tInsert the data of the node you wish to delete\n\tRow: ");
-                scanf("%d", &row_data);
-                getchar();
-                if (row_head[row_data - 1] == NULL)
-                    printf("\tNo such node was found\n\n");
+                if (column_head[column_data - 1] == NULL)
+                    printf("\tNo such edge was found\n\n");
                 else
                 {
-                    printf("\tColumn: ");
-                    scanf("%d", &column_data);
-                    getchar();
-                    if (column_head[column_data - 1] == NULL)
-                        printf("\tNo such node was found\n\n");
-                    else
-                    {
-                        delete (row_head, column_head, row_data, column_data);
-                        delete (row_head, column_head, column_data, row_data);
-                    }
+                    delete (row_head, column_head, row_data, column_data);
+                    delete (row_head, column_head, column_data, row_data);
                 }
-                break;
-            case 'r':
-                printf("\n\n\tPRINT ROW DATA\n\n");
-                print_row(row_head);
-                break;
-            case 'c':
-                printf("\n\n\tPRINT COLUMN DATA\n\n");
-                print_column(column_head);
-                break;
-            case 'n':
-                printf("\n\n\tNODE CONNECTIONS\n\n");
-                node(row_head);
-                break;
-            case 'b':
-                printf("\n\n\tBREADTH-FIRST SEARCH\n\n");
-                printf("\tInsert starting-point node: ");
-                scanf("%d", &row_data);
-                getchar();
-                if (row_head[row_data - 1] == NULL)
-                    printf("\tNo such node was found\n\n");
-                else
-                    bfs(row_head, row_data);
-                break;
-            default:
-                break;
             }
+            break;
+        case 'r':
+            printf("\n\n\tPRINT ROW DATA\n\n");
+            print_row(row_head);
+            break;
+        case 'c':
+            printf("\n\n\tPRINT COLUMN DATA\n\n");
+            print_column(column_head);
+            break;
+        case 'n':
+            printf("\n\n\tEDGE SPARSE ARRAY CONNECTIONS\n\n");
+            node(row_head);
+            break;
+        case 'b':
+            printf("\n\n\tBREADTH-FIRST SEARCH\n\n");
+            printf("\tInsert starting-point node: ");
+            scanf("%d", &row_data);
+            getchar();
+            if (row_head[row_data - 1] == NULL)
+                printf("\tNo such node was found\n\n");
+            else
+                bfs(row_head, row_data);
+            break;
+        default:
+            break;
         }
     }
     return 0;
 }
 
-int insert(node_pointer r_h[], node_pointer c_h[], int r, int c) // warning: you pass a pointer to head as an argument because otherwise head won't change globally
+void insert(node_pointer r_h[], node_pointer c_h[], int r, int c)
 {
     node_pointer new_node, aux;
 
@@ -145,6 +138,7 @@ int insert(node_pointer r_h[], node_pointer c_h[], int r, int c) // warning: you
     new_node->color = 0;
     new_node->distance = 4294967295;
     new_node->parent = NULL;
+    new_node->leaf = 2;
 
     // INSERT IN ROW
     if (r_h[i] != NULL)
@@ -153,15 +147,15 @@ int insert(node_pointer r_h[], node_pointer c_h[], int r, int c) // warning: you
         {
             aux = r_h[i];
 
-            while ((aux->next != NULL) && (aux->next->column < new_node->column)) // When we insert a tail I wonder how the code doesn't break by checking aux->next->data
+            while ((aux->next != NULL) && (aux->next->column < new_node->column))
                 aux = aux->next;
 
             if (aux->next != NULL)
             {
                 if (aux->next->column == new_node->column)
                 {
-                    printf("\tInsertion not allowed. Node already exists\n");
-                    return 0;
+                    printf("\tInsertion not allowed. Edge already exists\n");
+                    return;
                 }
                 else
                 {
@@ -185,8 +179,8 @@ int insert(node_pointer r_h[], node_pointer c_h[], int r, int c) // warning: you
         }
         else if (new_node->column == r_h[i]->column)
         {
-            printf("\tInsertion not allowed. Node already exists\n");
-            return 0;
+            printf("\tInsertion not allowed. Edge already exists\n");
+            return;
         }
         else
             exit(1);
@@ -203,14 +197,14 @@ int insert(node_pointer r_h[], node_pointer c_h[], int r, int c) // warning: you
         {
             aux = c_h[j];
 
-            while ((aux->down != NULL) && (aux->down->row < new_node->row)) // When we insert a tail I wonder how the code doesn't break by checking aux->down->data
+            while ((aux->down != NULL) && (aux->down->row < new_node->row))
                 aux = aux->down;
 
             if (aux->down != NULL)
             {
                 if (aux->down->row == new_node->row)
                 {
-                    printf("\tInsertion not allowed. Node already exists\n\n");
+                    printf("\tInsertion not allowed. Edge already exists\n\n");
                     exit(1); // it has to terminate because something was inserted
                 }
                 else
@@ -235,7 +229,7 @@ int insert(node_pointer r_h[], node_pointer c_h[], int r, int c) // warning: you
         }
         else if (new_node->row == c_h[j]->row)
         {
-            printf("\tInsertion not allowed. Node already exists\n\n");
+            printf("\tInsertion not allowed. Edge already exists\n\n");
             exit(1);
         }
         else
@@ -247,7 +241,7 @@ int insert(node_pointer r_h[], node_pointer c_h[], int r, int c) // warning: you
         exit(1);
 }
 
-int delete(node_pointer r_h[], node_pointer c_h[], int r, int c)
+void delete(node_pointer r_h[], node_pointer c_h[], int r, int c)
 {
     node_pointer node_to_delete, c_aux, c_aux2, r_aux, r_aux2;
 
@@ -261,7 +255,7 @@ int delete(node_pointer r_h[], node_pointer c_h[], int r, int c)
     if (c < r_h[i]->column)
     {
         printf("\tNo such node was found\n");
-        return 0;
+        return;
     }
     else if (c > r_h[i]->column)
     {
@@ -269,7 +263,7 @@ int delete(node_pointer r_h[], node_pointer c_h[], int r, int c)
         if (c_aux->next == NULL)
         {
             printf("\tNo such node was found\n");
-            return 0;
+            return;
         }
 
         while (c_aux->next != NULL && c_aux->next->column < c)
@@ -279,7 +273,7 @@ int delete(node_pointer r_h[], node_pointer c_h[], int r, int c)
             if (c_aux->next == NULL)
             {
                 printf("\tNo such node was found\n");
-                return 0;
+                return;
             }
         }
 
@@ -291,18 +285,18 @@ int delete(node_pointer r_h[], node_pointer c_h[], int r, int c)
                 c_aux2 = node_to_delete->next;
                 c_aux->next = c_aux2;
                 c_aux2->back = c_aux;
-                printf("\tBack node: %d.%d\n\tNext node: %d.%d\n", c_aux->row, c_aux->column, c_aux2->row, c_aux2->column);
+                printf("\tBack edge: %d.%d\n\tNext edge: %d.%d\n", c_aux->row, c_aux->column, c_aux2->row, c_aux2->column);
             }
             else
             {
                 c_aux->next = node_to_delete->next; // could as well be c_aux->next = NULL
-                printf("\tBack node: %d.%d\n\tNext node: NULL\n", c_aux->row, c_aux->column);
+                printf("\tBack edge: %d.%d\n\tNext edge: NULL\n", c_aux->row, c_aux->column);
             }
         }
         else
         {
             printf("\tNo such node was found\n");
-            return 0;
+            return;
         }
     }
     else if (c == r_h[i]->column && r_h[i]->next != NULL)
@@ -310,18 +304,18 @@ int delete(node_pointer r_h[], node_pointer c_h[], int r, int c)
         node_to_delete = c_aux;
         r_h[i] = c_aux->next;
         r_h[i]->back = NULL;
-        printf("\tBack node: NULL\n\tNext node: %d.%d\n", r_h[i]->row, r_h[i]->column);
+        printf("\tBack edge: NULL\n\tNext edge: %d.%d\n", r_h[i]->row, r_h[i]->column);
     }
     else if (c == r_h[i]->column && r_h[i]->next == NULL)
     {
         node_to_delete = c_aux;
         r_h[i] = NULL;
-        printf("\tBack node: NULL\n\tNext node: NULL\n");
+        printf("\tBack edge: NULL\n\tNext edge: NULL\n");
     }
     else
     {
         printf("\tFORBIDDEN\n");
-        exit(1);
+        exit(2);
     }
 
     // BREAK COLUMN LIST CONNECTIONS
@@ -357,12 +351,12 @@ int delete(node_pointer r_h[], node_pointer c_h[], int r, int c)
                 r_aux2 = node_to_delete->down;
                 r_aux->down = r_aux2;
                 r_aux2->up = r_aux;
-                printf("\tUp node: %d.%d\n\tDown node: %d.%d\n", r_aux->row, r_aux->column, r_aux2->row, r_aux2->column);
+                printf("\tUp edge: %d.%d\n\tDown edge: %d.%d\n", r_aux->row, r_aux->column, r_aux2->row, r_aux2->column);
             }
             else
             {
                 r_aux->down = node_to_delete->down; // could as well be r_aux->down = NULL
-                printf("\tUp node: %d.%d\n\tDown node: NULL\n", r_aux->row, r_aux->column);
+                printf("\tUp edge: %d.%d\n\tDown edge: NULL\n", r_aux->row, r_aux->column);
             }
         }
         else
@@ -376,21 +370,21 @@ int delete(node_pointer r_h[], node_pointer c_h[], int r, int c)
         node_to_delete = r_aux;
         c_h[j] = r_aux->down;
         c_h[j]->up = NULL;
-        printf("\tUp node: NULL\n\tDown node: %d.%d\n", c_h[j]->row, c_h[j]->column);
+        printf("\tUp edge: NULL\n\tDown edge: %d.%d\n", c_h[j]->row, c_h[j]->column);
     }
     else if (r == c_h[j]->row && c_h[j]->down == NULL)
     {
         node_to_delete = r_aux;
         c_h[j] = NULL;
-        printf("\tUp node: NULL\n\tDown node: NULL\n");
+        printf("\tUp edge: NULL\n\tDown edge: NULL\n");
     }
     else
     {
         printf("\tFORBIDDEN\n");
-        exit(1);
+        exit(2);
     }
 
-    printf("\tNode to delete: %d.%d\n\n", node_to_delete->row, node_to_delete->column);
+    printf("\nEdge to delete: %d.%d\n\n", node_to_delete->row, node_to_delete->column);
     free(node_to_delete);
 }
 
@@ -398,7 +392,7 @@ void node(node_pointer r_h[])
 {
     node_pointer aux;
     int row_data, column_data;
-    printf("\tInsert the data of the node you wish to see its connections\n\tRow: ");
+    printf("\tInsert the data of the edge you wish to see its connections\n\tRow: ");
     scanf("%d", &row_data);
     getchar();
     int i = row_data - 1;
@@ -460,16 +454,7 @@ void node(node_pointer r_h[])
                     printf("DOWN IS NOT CONNECTED\n\n");
             }
             else
-            {
-                if (aux->column > column_data)
-                {
-                    printf("\tNo such node was found\n\n");
-                }
-                if (aux->column < column_data)
-                {
-                    printf("\tNo such node was found\n\n");
-                }
-            }
+                printf("\tNo such edge was found\n\n");
         }
 
         if (column_data == r_h[i]->column)
@@ -566,6 +551,7 @@ void print_column(node_pointer c_h[])
 void bfs(node_pointer r_h[], int r)
 {
     int i = r - 1;
+    int j;
     int neighbor;
     unsigned int l_flag;
     node_pointer u, aux, parent;
@@ -587,7 +573,7 @@ void bfs(node_pointer r_h[], int r)
     grey = 0;
     black = 0;
 
-    for (int j = 0; j < 30; j++)
+    for (j = 0; j < 30; j++)
     {
         if (r_h[j] != NULL)
         {
@@ -698,8 +684,7 @@ void bfs(node_pointer r_h[], int r)
     printf("\nColors after checking the entire array of nodes:\nwhite = %d\ngrey = %d\nblack = %d\n\n", white, grey, black);
 
     printf("\n\tBFS RESULTS:\n\n");
-    unsigned int clr;
-    for (int j = 0; j < 30; j++)
+    for (j = 0; j < 30; j++)
     {
         if (r_h[j] != NULL)
         {
@@ -710,8 +695,7 @@ void bfs(node_pointer r_h[], int r)
             else
                 printf("%d\n", r_h[j]->parent->row);
             printf("\tColor: ");
-            clr = r_h[j]->color;
-            switch (clr)
+            switch (r_h[j]->color)
             {
             case 0:
                 printf("white\n");
