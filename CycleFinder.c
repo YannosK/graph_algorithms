@@ -28,6 +28,7 @@ void node(node_pointer r_h[]);
 void print_row(node_pointer r_h[]);
 void print_column(node_pointer c_h[]);
 void bfs(node_pointer r_h[], int r);
+void cyclefinder(node_pointer r_h[]);
 
 int main(void)
 {
@@ -593,6 +594,7 @@ void bfs(node_pointer r_h[], int r)
             r_h[j]->color = 0;
             r_h[j]->distance = 4294967295;
             r_h[j]->parent = NULL;
+            r_h[j]->leaf = 2;
             white++;
         }
     }
@@ -739,5 +741,86 @@ void bfs(node_pointer r_h[], int r)
                 break;
             }
         }
+    }
+
+    char answer;
+    printf("\tDo you want to run cycle finder algorithm?\n\tIf you don't the breadth-first search results will be lost after this routine is over\n\t(press 'y' for yes, or 'n' for no): ");
+    scanf("%c", &answer);
+    getchar();
+    if (answer == 'y')
+        cyclefinder(r_h);
+    else
+        return;
+}
+
+void cyclefinder(node_pointer r_h[])
+{
+    int row_data, column_data, r, c;
+    node_pointer aux;
+    char a;
+
+    printf("\n\n\tCYCLE FINDER\n\n");
+    printf("\tAdd the two leaf nodes that you want to find a cycle they belong in\n");
+    printf("\tRow: ");
+    scanf("%d", &row_data);
+    getchar();
+    printf("\tColumn: ");
+    scanf("%d", &column_data);
+    getchar();
+
+    r = row_data - 1;
+    c = column_data - 1;
+    aux = r_h[r];
+
+    while (aux != NULL && aux->next != NULL && aux->column != column_data)
+    {
+        aux = aux->next;
+    }
+
+    if (aux == NULL)
+    {
+        printf("\tNo such node was found (invalid row)\n");
+        printf("\tWanna try again? (press 'y' for yes, or 'n' for no): ");
+        scanf("%c", &a);
+        getchar();
+        if (a == 'y')
+            cyclefinder(r_h);
+        else
+            return;
+    }
+    else if (aux->column != column_data)
+    {
+        printf("\tNo such node was found (invalid column - either the node does not exist, or it is not connected to the 'row' node)\n");
+        printf("\tWanna try again? (press 'y' for yes, or 'n' for no): ");
+        scanf("%c", &a);
+        getchar();
+        if (a == 'y')
+            cyclefinder(r_h);
+        else
+            return;
+    }
+    else if (!(r_h[r]->leaf == 1 || r_h[c]->leaf == 1))
+    {
+        printf("\tInvalid nodes (at least one iof the two nodes must be a leaf)\n");
+        printf("\tWanna try again? (press 'y' for yes, or 'n' for no): ");
+        scanf("%c", &a);
+        getchar();
+        if (a == 'y')
+            cyclefinder(r_h);
+        else
+            return;
+        return;
+    }
+    else
+    {
+        printf("\tRUN\n\n");
+        /*
+        WARNING
+
+        as it is right now it doesn't catch a special case:
+        a lonely branch
+        this could be considered a cycle even if you run the algorithm you are about to write
+        */
+        return;
     }
 }
