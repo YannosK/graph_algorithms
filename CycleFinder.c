@@ -21,7 +21,7 @@ struct node
 int white = 0, grey = 0, black = 0;
 
 void insert(node_pointer r_h[], node_pointer c_h[], int r, int c);
-void delete(node_pointer r_h[], node_pointer c_h[], int r, int c);
+void del(node_pointer r_h[], node_pointer c_h[], int r, int c);
 void node(node_pointer r_h[]);
 void print_row(node_pointer r_h[]);
 void print_column(node_pointer c_h[]);
@@ -86,8 +86,9 @@ int main(void)
                     printf("\tNo such edge was found\n\n");
                 else
                 {
-                    delete (row_head, column_head, row_data, column_data);
-                    delete (row_head, column_head, column_data, row_data);
+                    printf("\n");
+                    del(row_head, column_head, row_data, column_data);
+                    del(row_head, column_head, column_data, row_data);
                 }
             }
             break;
@@ -136,7 +137,7 @@ void insert(node_pointer r_h[], node_pointer c_h[], int r, int c)
     new_node->down = NULL;
     new_node->up = NULL;
     new_node->color = 0;
-    new_node->distance = 4294967295;
+    new_node->distance = 32767;
     new_node->parent = NULL;
     new_node->leaf = 2;
 
@@ -241,7 +242,7 @@ void insert(node_pointer r_h[], node_pointer c_h[], int r, int c)
         exit(1);
 }
 
-void delete(node_pointer r_h[], node_pointer c_h[], int r, int c)
+void del(node_pointer r_h[], node_pointer c_h[], int r, int c)
 {
     node_pointer node_to_delete, c_aux, c_aux2, r_aux, r_aux2;
 
@@ -384,7 +385,7 @@ void delete(node_pointer r_h[], node_pointer c_h[], int r, int c)
         exit(2);
     }
 
-    printf("\nEdge to delete: %d.%d\n\n", node_to_delete->row, node_to_delete->column);
+    printf("\tEdge to delete: %d.%d\n\n", node_to_delete->row, node_to_delete->column);
     free(node_to_delete);
 }
 
@@ -578,7 +579,7 @@ void bfs(node_pointer r_h[], int r)
         if (r_h[j] != NULL)
         {
             r_h[j]->color = 0;
-            r_h[j]->distance = 4294967295;
+            r_h[j]->distance = 32767;
             r_h[j]->parent = NULL;
             r_h[j]->leaf = 2;
             white++;
@@ -783,9 +784,9 @@ void cyclefinder(node_pointer r_h[])
         else
             return;
     }
-    else if (!(r_h[r]->leaf == 1 || r_h[c]->leaf == 1))
+    else if (r_h[r]->parent == r_h[c] || r_h[c]->parent == r_h[r])
     {
-        printf("\tInvalid nodes (at least one iof the two nodes must be a leaf)\n");
+        printf("\tInvalid nodes (their edge belongs in the bfs spanning tree)\n");
         printf("\tWanna try again? (press 'y' for yes, or 'n' for no): ");
         scanf("%c", &a);
         getchar();
@@ -860,92 +861,60 @@ void cyclefinder(node_pointer r_h[])
 
         while (aux_r->member == aux_c->member)
         {
-            if (aux_r->back == NULL)
+            aux_r = aux_r->back;
+            aux_c = aux_c->back;
+
+            tmp = aux_r->next;
+            aux_r->next = NULL;
+            tail_r = aux_r;
+            free(tmp);
+
+            tmp = aux_c->next;
+            aux_c->next = NULL;
+            tail_c = aux_c;
+            free(tmp);
+        }
+
+        printf("\n\tPRINTING THE CYCLE\n\n");
+        aux_r = head_r;
+        aux_c = tail_c;
+
+        while (aux_r != NULL)
+        {
+            printf("\t%d\n", aux_r->member->row);
+            tmp = aux_r;
+            if (aux_r->next == NULL)
             {
-                tmp = aux_r;
+                printf("\t%d\n", aux_r->member->parent->row);
                 aux_r = NULL;
-                free(tmp);
-                aux_c = aux_c->back;
-                tmp = aux_c->next;
-                aux_c->next = NULL;
-                tail_c = aux_c;
-                free(tmp);
-                break;
-            }
-            else if (aux_c->back == NULL)
-            {
-                tmp = aux_c;
-                aux_c = NULL;
-                free(tmp);
-                aux_r = aux_r->back;
-                tmp = aux_r->next;
-                aux_r->next = NULL;
-                tail_r = aux_r;
                 free(tmp);
                 break;
             }
             else
             {
-                aux_r = aux_r->back;
-                aux_c = aux_c->back;
-
-                tmp = aux_r->next;
-                aux_r->next = NULL;
-                tail_r = aux_r;
-                free(tmp);
-
-                tmp = aux_c->next;
-                aux_c->next = NULL;
-                tail_c = aux_c;
+                aux_r = aux_r->next;
+                aux_r->back = NULL;
+                head_r = aux_r;
                 free(tmp);
             }
         }
 
-        if (aux_r == NULL || aux_c == NULL)
-            printf("\tThe nodes you inserted are not valid to run (they are either a single branch or their edge belongs to the bfs spanning tree)\n");
-        else
+        while (aux_c != NULL)
         {
-            printf("\n\tPRINTING THE CYCLE\n\n");
-            aux_r = head_r;
-            aux_c = tail_c;
-
-            while (aux_r != NULL)
+            printf("\t%d\n", aux_c->member->row);
+            tmp = aux_c;
+            if (aux_c->back == NULL)
             {
-                printf("\t%d\n", aux_r->member->row);
-                tmp = aux_r;
-                if (aux_r->next == NULL)
-                {
-                    printf("\t%d\n", aux_r->member->parent->row);
-                    aux_r = NULL;
-                    free(tmp);
-                    break;
-                }
-                else
-                {
-                    aux_r = aux_r->next;
-                    aux_r->back = NULL;
-                    head_r = aux_r;
-                    free(tmp);
-                }
+                aux_c = NULL;
+                free(tmp);
+                break;
             }
-
-            while (aux_c != NULL)
+            else
             {
-                printf("\t%d\n", aux_c->member->row);
-                tmp = aux_c;
-                if (aux_c->back == NULL)
-                {
-                    aux_c = NULL;
-                    free(tmp);
-                    break;
-                }
-                else
-                {
-                    aux_c = aux_c->back;
-                    aux_c->next = NULL;
-                    tail_c = aux_c;
-                    free(tmp);
-                }
+                aux_c = aux_c->back;
+                aux_c->next = NULL;
+                tail_c = aux_c;
+                free(tmp);
             }
         }
 
